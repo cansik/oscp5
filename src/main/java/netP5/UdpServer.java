@@ -26,9 +26,7 @@
 package netP5;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -128,6 +126,8 @@ public final class UdpServer extends Observable implements Transmitter {
 				Selector selector = SelectorProvider.provider( ).openSelector( );
 				channel = DatagramChannel.open( );
 				channel.configureBlocking( false );
+				channel.setOption(StandardSocketOptions.SO_BROADCAST, true);
+				channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 				InetSocketAddress isa = ( host == null ) ? new InetSocketAddress( port ) : new InetSocketAddress( host , port );
 				channel.socket( ).bind( isa );
 				channel.register( selector , SelectionKey.OP_READ , ByteBuffer.allocate( size ) );

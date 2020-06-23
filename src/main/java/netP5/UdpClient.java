@@ -28,9 +28,13 @@ package netP5;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Collection;
+
+import static java.net.SocketOptions.SO_BROADCAST;
 
 public final class UdpClient implements Transmitter {
 
@@ -48,7 +52,9 @@ public final class UdpClient implements Transmitter {
 		socket = new InetSocketAddress( theHost , thePort );
 
 		try {
-			channel = DatagramChannel.open( );
+			channel = DatagramChannel.open();
+			channel.setOption(StandardSocketOptions.SO_BROADCAST, true);
+			channel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 			channel.connect( socket );
 		} catch ( IOException e ) {
 			e.printStackTrace( );
@@ -101,6 +107,7 @@ public final class UdpClient implements Transmitter {
 			buffer.put( theContent );
 			buffer.flip( );
 			DatagramChannel channel = DatagramChannel.open( );
+			channel.setOption(StandardSocketOptions.SO_BROADCAST, true);
 
 			for ( SocketAddress addr : theAddress ) {
 				channel.send( buffer , addr );
